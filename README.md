@@ -2,7 +2,7 @@
 ![Icon](https://raw.githubusercontent.com/enen92/script.screensaver.football.panel/master/icon.png)
 
 A football panel made for Kodi.
-Livescores, League tables and RSS feeds as a screensaver or program addon. Fully customizable, each item is updated on time intervals and scrolls through the screen.
+Livescores, League tables and RSS feeds as a screensaver or program addon. Fully customizable, each item is updated on time intervals and scrolls through the screen. Presents the team logos, score, goal details, time and redcards.
 Powered by http://www.thesportsdb.com
 
 ##Options
