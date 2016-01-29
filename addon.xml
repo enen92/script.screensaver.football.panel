@@ -10,9 +10,10 @@
 	<extension point="xbmc.python.script" library="interface.py" />
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
 		<website>http://www.thesportsdb.com/</website>
 		<source>https://github.com/enen92/script.screensaver.football.panel</source>
-		<forum>http://forum.kodi.tv/showthread.php?tid=238039</forum>
+		<forum>http://forum.kodi.tv/showthread.php?tid=258252</forum>
 		<summary lang="en">A football panel made for Kodi</summary>
 		<summary lang="en">Um painel de futebol para o Kodi</summary>
 		<description lang="en">Livescores, League tables and RSS feeds as a screensaver or program addon. [CR][CR]Powered by http://www.thesportsdb.com</description>
