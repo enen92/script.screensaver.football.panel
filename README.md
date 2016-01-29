@@ -9,6 +9,7 @@ Powered by http://www.thesportsdb.com
 
 * Shows fanarts of your favourite leagues as a fallback (if no live events are on)
 * Update intervals can be costumized
+* Option to hide finished games or games that have not started
 * You can choose which league tables to display
 * You can choose a custom RSS feed
 * Matches start times will be converted for your timezone
@@ -16,5 +17,5 @@ Powered by http://www.thesportsdb.com
 ![Options](http://s17.postimg.org/j10c1p3b3/footballpanel_ignoreleages.png)
 
 ##Screenshots
-![Live Matches](http://s17.postimg.org/58lx62cjj/footballpanel_livegames.png)
+![Live Matches](http://s15.postimg.org/8nkhulzqz/footballpanel_livegames.png)
 ![Fallback](http://s17.postimg.org/vuydv1gqn/footballpanel_nolivegames.png)
