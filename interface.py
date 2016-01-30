@@ -71,6 +71,7 @@ class Main(xbmcgui.WindowXMLDialog):
 		t1.join()
 		t2.join()
 		t3.join()
+		xbmc.executebuiltin("ClearProperty(loading,Home)")
 		i = 0
 		while self.isRunning:
 			if (float(i*200)/(livescores_update_time*60*1000)).is_integer() and ((i*200)/(3*60*1000)) != 0:
@@ -104,7 +105,6 @@ class Main(xbmcgui.WindowXMLDialog):
 		if rss_line:
 			self.getControl(RSS_FEEDS).setLabel("")
 			self.getControl(RSS_FEEDS).setLabel(rss_line)
-			xbmc.executebuiltin("ClearProperty(loading,Home)")
 			xbmc.executebuiltin("SetProperty(has-rss,1,home)")
 
 	def getLivescores(self):
@@ -122,7 +122,6 @@ class Main(xbmcgui.WindowXMLDialog):
 		if images:
 			random_photo = images[random.randint(0,len(images)-1)]
 			self.getControl(NO_GAMES).setImage(random_photo)
-		xbmc.executebuiltin("ClearProperty(loading,Home)")
 		xbmc.executebuiltin("SetProperty(no-games,1,home)")
 		return
 
@@ -148,7 +147,6 @@ class Main(xbmcgui.WindowXMLDialog):
 		if league.strLogo:
 			self.getControl(LEAGUETABLES_CLEARART).setImage(league.strLogo)
 		self.getControl(LEAGUETABLES_LIST_CONTROL).addItems(self.table)
-		xbmc.executebuiltin("ClearProperty(loading,Home)")
 		xbmc.executebuiltin("SetProperty(has-tables,1,home)")
 		return
 		
@@ -158,10 +156,12 @@ class Main(xbmcgui.WindowXMLDialog):
 			for livegame in self.livescoresdata:
 				if removeNonAscii(livegame.League) not in str(self.ignored_leagues):
 					#decide to add the match or not
-					if (livegame.Time.lower() != "not started") and (livegame.Time.lower() != "finished"):
+					if (livegame.Time.lower() != "not started") and (livegame.Time.lower() != "finished") and (livegame.Time.lower() != "postponed"):
 						add = True
 					else:
 						if livegame.Time.lower() == "not started" and hide_notstarted == "true":
+							add = False
+						elif livegame.Time.lower() == "postponed" and hide_notstarted == "true":
 							add = False
 						elif livegame.Time.lower() == "finished" and hide_finished == "true":
 							add = False
@@ -216,7 +216,6 @@ class Main(xbmcgui.WindowXMLDialog):
 		self.getControl(LIVESCORES_PANEL_CONTROL_1).reset()
 		self.getControl(LIVESCORES_PANEL_CONTROL_2).reset()
 		if items:
-			xbmc.executebuiltin("ClearProperty(loading,Home)")
 			xbmc.executebuiltin("ClearProperty(no-games,Home)")
 			if len(items) < 3:
 				self.getControl(LIVESCORES_PANEL_CONTROL_1).addItems(items)
