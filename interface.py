@@ -53,6 +53,7 @@ class Main(xbmcgui.WindowXMLDialog):
 			self.ignored_leagues = eval(ssutils.read_file(ignored_league_list_file))
 		else:
 			self.ignored_leagues = []
+		self.teamObjs = {}
 
 	def onInit(self):
 		xbmc.log(msg="[Football Panel] Script started", level=xbmc.LOGDEBUG)
@@ -108,7 +109,7 @@ class Main(xbmcgui.WindowXMLDialog):
 			xbmc.executebuiltin("SetProperty(has-rss,1,home)")
 
 	def getLivescores(self):
-		self.livescoresdata = api.Livescores().Soccer(objects=True)
+		self.livescoresdata = api.Livescores().Soccer()
 		return
 
 	def set_no_games(self):
@@ -169,49 +170,70 @@ class Main(xbmcgui.WindowXMLDialog):
 							add = True
 						
 					if add == True:
-						item = xbmcgui.ListItem(livegame.HomeTeam+livegame.AwayTeam)
-						item.setProperty('result',str(livegame.HomeGoals)+"-"+str(livegame.AwayGoals))
-						item.setProperty('home_team_logo',livegame.HomeTeamObj.strTeamBadge)
-						item.setProperty('away_team_logo',livegame.AwayTeamObj.strTeamBadge)
-						if livegame.HomeGoals and bool(int(livegame.HomeGoals)>0):
-							item.setProperty('has_home_goals',"goal.png")
-						if livegame.AwayGoals and bool(int(livegame.AwayGoals)>0):
-							item.setProperty('has_away_goals',"goal.png")
-						if livegame.HomeGoalDetails: item.setProperty('home_goal_details',livegame.HomeGoalDetails)
-						if livegame.AwayGoalDetails: item.setProperty('away_goal_details',livegame.AwayGoalDetails)
-						item.setProperty('league_and_round',livegame.League+' - Round '+livegame.Round)
-						
-						#red cards
-						if livegame.HomeTeamRedCardDetails:
-							home_redcards = livegame.HomeTeamRedCardDetails.split(";")
-							if len(home_redcards) == 1: item.setProperty('home_redcard1',"redcard.png")
-							elif len(home_redcards) > 1:
-								item.setProperty('home_redcard1',"redcard.png")
-								item.setProperty('home_redcard2',"redcard.png")
-						if livegame.AwayTeamRedCardDetails:
-							away_redcards = livegame.AwayTeamRedCardDetails.split(";")
-							if len(away_redcards) == 1: item.setProperty('away_redcard1',"redcard.png")
-							elif len(away_redcards) > 1:
-								item.setProperty('away_redcard1',"redcard.png")
-								item.setProperty('away_redcard2',"redcard.png")
-						
-						#Convert event time to user timezone
-						if livegame.Time.lower() == "not started":
-							try:
-								db_time = pytz.timezone(str(pytz.timezone("Europe/London"))).localize(livegame.DateTime)
-								my_location=pytz.timezone(pytz.all_timezones[int(my_timezone)])
-								converted_time=db_time.astimezone(my_location)
-								starttime=converted_time.strftime("%H:%M")
-								item.setProperty('starttime',starttime)
-							except: pass
 
-						#check match status
-						item.setProperty('minute',str(livegame.Time))
-						if livegame.Time.lower() == "finished": status = "redstatus.png"
-						elif "'" in livegame.Time.lower(): status = "greenstatus.png"
-						else: status = "yellowstatus.png"
-						item.setProperty('status',status)
-						items.append(item)
+						#Get only the team objects for the games that will be added (avoid unecessary requests)
+						#Append to self.teamObjs
+						if not livegame.HomeTeam in self.teamObjs.keys():
+							try:
+								hometeamobj = api.Lookups().Team(teamid=livegame.HomeTeam_Id)[0]
+								livegame.setHomeTeamObj(hometeamobj)
+							except:
+								hometeamobj = None
+						else:
+							hometeamobj = self.teamObjs[livegame.HomeTeam]
+						if not livegame.AwayTeam in self.teamObjs.keys():
+							try:
+								awayteamobj = api.Lookups().Team(teamid=livegame.AwayTeam_Id)[0]
+								livegame.setAwayTeamObj(awayteamobj)
+							except:
+								awayteamobj = None
+						else:
+							awayteamobj = self.teamObjs[livegame.HomeTeam]
+
+						if hometeamobj and awayteamobj:
+							item = xbmcgui.ListItem(livegame.HomeTeam+livegame.AwayTeam)
+							item.setProperty('result',str(livegame.HomeGoals)+"-"+str(livegame.AwayGoals))
+							item.setProperty('home_team_logo',livegame.HomeTeamObj.strTeamBadge)
+							item.setProperty('away_team_logo',livegame.AwayTeamObj.strTeamBadge)
+							if livegame.HomeGoals and bool(int(livegame.HomeGoals)>0):
+								item.setProperty('has_home_goals',"goal.png")
+							if livegame.AwayGoals and bool(int(livegame.AwayGoals)>0):
+								item.setProperty('has_away_goals',"goal.png")
+							if livegame.HomeGoalDetails: item.setProperty('home_goal_details',livegame.HomeGoalDetails)
+							if livegame.AwayGoalDetails: item.setProperty('away_goal_details',livegame.AwayGoalDetails)
+							item.setProperty('league_and_round',livegame.League+' - Round '+livegame.Round)
+							
+							#red cards
+							if livegame.HomeTeamRedCardDetails:
+								home_redcards = livegame.HomeTeamRedCardDetails.split(";")
+								if len(home_redcards) == 1: item.setProperty('home_redcard1',"redcard.png")
+								elif len(home_redcards) > 1:
+									item.setProperty('home_redcard1',"redcard.png")
+									item.setProperty('home_redcard2',"redcard.png")
+							if livegame.AwayTeamRedCardDetails:
+								away_redcards = livegame.AwayTeamRedCardDetails.split(";")
+								if len(away_redcards) == 1: item.setProperty('away_redcard1',"redcard.png")
+								elif len(away_redcards) > 1:
+									item.setProperty('away_redcard1',"redcard.png")
+									item.setProperty('away_redcard2',"redcard.png")
+							
+							#Convert event time to user timezone
+							if livegame.Time.lower() == "not started":
+								try:
+									db_time = pytz.timezone(str(pytz.timezone("Europe/London"))).localize(livegame.DateTime)
+									my_location=pytz.timezone(pytz.all_timezones[int(my_timezone)])
+									converted_time=db_time.astimezone(my_location)
+									starttime=converted_time.strftime("%H:%M")
+									item.setProperty('starttime',starttime)
+								except: pass
+
+							#check match status
+							item.setProperty('minute',str(livegame.Time))
+							if livegame.Time.lower() == "finished": status = "redstatus.png"
+							elif "'" in livegame.Time.lower(): status = "greenstatus.png"
+							else: status = "yellowstatus.png"
+							item.setProperty('status',status)
+							items.append(item)
 
 		self.getControl(LIVESCORES_PANEL_CONTROL_1).reset()
 		self.getControl(LIVESCORES_PANEL_CONTROL_2).reset()
