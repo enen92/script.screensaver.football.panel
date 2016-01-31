@@ -173,9 +173,9 @@ class Main(xbmcgui.WindowXMLDialog):
 						item.setProperty('result',str(livegame.HomeGoals)+"-"+str(livegame.AwayGoals))
 						item.setProperty('home_team_logo',livegame.HomeTeamObj.strTeamBadge)
 						item.setProperty('away_team_logo',livegame.AwayTeamObj.strTeamBadge)
-						if bool(int(livegame.HomeGoals)>0):
+						if livegame.HomeGoals and bool(int(livegame.HomeGoals)>0):
 							item.setProperty('has_home_goals',"goal.png")
-						if bool(int(livegame.AwayGoals)>0):
+						if livegame.AwayGoals and bool(int(livegame.AwayGoals)>0):
 							item.setProperty('has_away_goals',"goal.png")
 						if livegame.HomeGoalDetails: item.setProperty('home_goal_details',livegame.HomeGoalDetails)
 						if livegame.AwayGoalDetails: item.setProperty('away_goal_details',livegame.AwayGoalDetails)
