@@ -109,6 +109,10 @@ class Main(xbmcgui.WindowXMLDialog):
 		for entry in feed['entries']:
 			rss_line = rss_line + entry['summary_detail']['value'] + " | "
 		if rss_line:
+			#cleanup html code from the rss line
+			htmlstriper = ssutils.HTMLStripper()
+			htmlstriper.feed(rss_line)
+			rss_line = htmlstriper.get_data()
 			self.getControl(RSS_FEEDS).setLabel("")
 			self.getControl(RSS_FEEDS).setLabel(rss_line)
 			xbmc.executebuiltin("SetProperty(has-rss,1,home)")
@@ -202,7 +206,7 @@ class Main(xbmcgui.WindowXMLDialog):
 							except:
 								awayteamobj = None
 						else:
-							awayteamobj = self.teamObjs[livegame.AwayTeam]
+							awayteamobj = self.teamObjs[livegame.HomeTeam]
 							livegame.setAwayTeamObj(awayteamobj)
 
 						if hometeamobj and awayteamobj:
