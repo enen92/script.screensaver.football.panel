@@ -168,6 +168,10 @@ class Main(xbmcgui.WindowXMLDialog):
 							add = False
 						else:
 							add = True
+							
+					#Avoid adding matches that have no score defined
+					if not livegame.HomeGoals.strip() and not livegame.AwayGoals.strip():
+						add = False
 						
 					if add == True:
 
