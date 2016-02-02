@@ -18,7 +18,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+from HTMLParser import HTMLParser
 from common_addon import *
 
 def get_league_tables_ids():
@@ -91,3 +91,12 @@ def read_file(file):
 	contents = f.read()
 	f.close()
 	return contents
+
+class HTMLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
