@@ -53,6 +53,11 @@ class Main(xbmcgui.WindowXMLDialog):
 			self.ignored_leagues = eval(ssutils.read_file(ignored_league_list_file))
 		else:
 			self.ignored_leagues = []
+		
+		self.tables = ssutils.get_league_tables_ids()
+		random.shuffle(self.tables)
+		
+		self.table_index = -1
 		self.teamObjs = {}
 
 	def onInit(self):
@@ -75,11 +80,11 @@ class Main(xbmcgui.WindowXMLDialog):
 		xbmc.executebuiltin("ClearProperty(loading,Home)")
 		i = 0
 		while self.isRunning:
-			if (float(i*200)/(livescores_update_time*60*1000)).is_integer() and ((i*200)/(3*60*1000)) != 0:
+			if (float(i*200)/(livescores_update_time*60*1000)).is_integer() and i != 0:
 				self.livescoresThread()
-			if (float(i*200)/(tables_update_time*60*1000)).is_integer() and ((i*200)/(8*60*1000)) != 0:
+			if (float(i*200)/(tables_update_time*60*1000)).is_integer() and i != 0:
 				self.tablesThread()
-			if (float(i*200)/(rss_update_time*60*1000)).is_integer() and ((i*200)/(10*60*1000)) != 0:
+			if (float(i*200)/(rss_update_time*60*1000)).is_integer() and i != 0:
 				self.rssThread()
 			xbmc.sleep(200)
 			i += 1
@@ -102,7 +107,7 @@ class Main(xbmcgui.WindowXMLDialog):
 		feed = feedparser.parse(addon.getSetting("rss-url"))
 		rss_line = ''
 		for entry in feed['entries']:
-			rss_line = rss_line + entry['summary_detail']['value'] + "|"
+			rss_line = rss_line + entry['summary_detail']['value'] + " | "
 		if rss_line:
 			self.getControl(RSS_FEEDS).setLabel("")
 			self.getControl(RSS_FEEDS).setLabel(rss_line)
@@ -127,12 +132,15 @@ class Main(xbmcgui.WindowXMLDialog):
 		return
 
 	def getLeagueTable(self):
-		self.table = []
-		tables = ssutils.get_league_tables_ids()
-		table_id = random.randint(0,len(tables)-1)
-		league = api.Lookups().League(tables[table_id])[0]
-		table = api.Lookups().Table(tables[table_id],objects=True)
 		
+		self.table_index += 1
+		if self.table_index > (len(self.tables)-1):
+			self.table_index = 0
+
+		league = api.Lookups().League(self.tables[self.table_index])[0]
+		table = api.Lookups().Table(self.tables[self.table_index],objects=True)
+		
+		self.table = []
 		for tableentry in table:
 			try:
 				if show_alternative == "false":
@@ -168,7 +176,6 @@ class Main(xbmcgui.WindowXMLDialog):
 							add = False
 						else:
 							add = True
-							
 					#Avoid adding matches that have no score defined
 					if not livegame.HomeGoals.strip() and not livegame.AwayGoals.strip():
 						add = False
@@ -181,18 +188,22 @@ class Main(xbmcgui.WindowXMLDialog):
 							try:
 								hometeamobj = api.Lookups().Team(teamid=livegame.HomeTeam_Id)[0]
 								livegame.setHomeTeamObj(hometeamobj)
+								self.teamObjs[livegame.HomeTeam] = hometeamobj
 							except:
 								hometeamobj = None
 						else:
 							hometeamobj = self.teamObjs[livegame.HomeTeam]
+							livegame.setHomeTeamObj(hometeamobj)
 						if not livegame.AwayTeam in self.teamObjs.keys():
 							try:
 								awayteamobj = api.Lookups().Team(teamid=livegame.AwayTeam_Id)[0]
 								livegame.setAwayTeamObj(awayteamobj)
+								self.teamObjs[livegame.AwayTeam] = awayteamobj
 							except:
 								awayteamobj = None
 						else:
 							awayteamobj = self.teamObjs[livegame.HomeTeam]
+							livegame.setAwayTeamObj(awayteamobj)
 
 						if hometeamobj and awayteamobj:
 							item = xbmcgui.ListItem(livegame.HomeTeam+livegame.AwayTeam)
