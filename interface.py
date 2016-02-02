@@ -206,7 +206,7 @@ class Main(xbmcgui.WindowXMLDialog):
 							except:
 								awayteamobj = None
 						else:
-							awayteamobj = self.teamObjs[livegame.HomeTeam]
+							awayteamobj = self.teamObjs[livegame.AwayTeam]
 							livegame.setAwayTeamObj(awayteamobj)
 
 						if hometeamobj and awayteamobj:
