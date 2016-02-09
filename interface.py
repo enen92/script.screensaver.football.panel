@@ -206,7 +206,7 @@ class Main(xbmcgui.WindowXMLDialog):
 							except:
 								awayteamobj = None
 						else:
-							awayteamobj = self.teamObjs[livegame.AwayTeam]
+							awayteamobj = self.teamObjs[livegame.HomeTeam]
 							livegame.setAwayTeamObj(awayteamobj)
 
 						if hometeamobj and awayteamobj:
@@ -225,12 +225,18 @@ class Main(xbmcgui.WindowXMLDialog):
 							#red cards
 							if livegame.HomeTeamRedCardDetails:
 								home_redcards = livegame.HomeTeamRedCardDetails.split(";")
+								if home_redcards:
+									for redcard in home_redcards:
+										if not redcard: home_redcards.remove(redcard)
 								if len(home_redcards) == 1: item.setProperty('home_redcard1',"redcard.png")
 								elif len(home_redcards) > 1:
 									item.setProperty('home_redcard1',"redcard.png")
 									item.setProperty('home_redcard2',"redcard.png")
 							if livegame.AwayTeamRedCardDetails:
 								away_redcards = livegame.AwayTeamRedCardDetails.split(";")
+								if away_redcards:
+									for redcard in away_redcards:
+										if not redcard: away_redcards.remove(redcard)
 								if len(away_redcards) == 1: item.setProperty('away_redcard1',"redcard.png")
 								elif len(away_redcards) > 1:
 									item.setProperty('away_redcard1',"redcard.png")
