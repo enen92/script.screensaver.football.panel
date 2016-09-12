@@ -31,6 +31,7 @@ addon_userdata = xbmc.translatePath(addon.getAddonInfo('profile')).decode('utf-8
 addon_name = addon.getAddonInfo('name')
 
 addon_userdata_cached_leagues = os.path.join(addon_userdata,"leagues")
+addon_userdata_cached_leagueteams = os.path.join(addon_userdata,"leagueteams")
 addon_userdata_cached_teams = os.path.join(addon_userdata,"teams")
 
 ignored_league_list_file = os.path.join(addon_userdata,"ignored.txt") 
@@ -62,16 +63,4 @@ def removeNonAscii(s):
 
 def translate(text):
 	return addon.getLocalizedString(text).encode('utf-8')
-
-def filewrite(_file,contents):
-    f = open(_file, "w")
-    f.write(contents)
-    f.close()
-    return
-
-def fileread(_file):
-    f = open(_file,"r")
-    contents = f.read()
-    f.close()
-    return contents
 
