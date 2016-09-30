@@ -1,8 +1,12 @@
+Version 1.4.2 (30/9/2016)
+-Fix English League One Table not showing
+-Remove deprecated functions
+
 Version 1.4.1 (12/9/2016)
 -Extended cache to individual teams
 -Fix issue with alternative name for teams
 
-Version 1.4.0 (7/9/2016)
+Version 1.4.0 (8/9/2016)
 -Implement cache mechanisms for league and team logos to reduce the load on the database
 
 Version 1.3.1 (22/8/2016)
